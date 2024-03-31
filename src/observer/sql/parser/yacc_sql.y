@@ -77,6 +77,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
         INT_T
         STRING_T
         FLOAT_T
+        DATE_T
         HELP
         EXIT
         DOT //QUOTE
@@ -121,6 +122,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %token <number> NUMBER
 %token <floats> FLOAT
 %token <string> ID
+%token <string> DATE_STR
 %token <string> SSS
 //非终结符
 
@@ -292,7 +294,6 @@ create_table_stmt:    /*create table 语句的语法解析树*/
 
       if (src_attrs != nullptr) {
         create_table.attr_infos.swap(*src_attrs);
-        delete src_attrs;
       }
       create_table.attr_infos.emplace_back(*$5);
       std::reverse(create_table.attr_infos.begin(), create_table.attr_infos.end());
@@ -341,6 +342,7 @@ type:
     INT_T      { $$=INTS; }
     | STRING_T { $$=CHARS; }
     | FLOAT_T  { $$=FLOATS; }
+    | DATE_T   { $$=DATES; }
     ;
 insert_stmt:        /*insert   语句的语法解析树*/
     INSERT INTO ID VALUES LBRACE value value_list RBRACE 
@@ -349,7 +351,6 @@ insert_stmt:        /*insert   语句的语法解析树*/
       $$->insertion.relation_name = $3;
       if ($7 != nullptr) {
         $$->insertion.values.swap(*$7);
-        delete $7;
       }
       $$->insertion.values.emplace_back(*$6);
       std::reverse($$->insertion.values.begin(), $$->insertion.values.end());
@@ -386,7 +387,20 @@ value:
       char *tmp = common::substr($1,1,strlen($1)-2);
       $$ = new Value(tmp);
       free(tmp);
-      free($1);
+    }
+    |DATE_STR{
+      char *tmp = common::substr($1,1,strlen($1)-2);
+      int maxint=0;
+      maxint=((~(unsigned int)maxint)<<1)>>1;
+      int y,m,d;
+      bool isValid;
+      sscanf(tmp,"%d-%d-%d",&y,&m,&d);
+      static int mon[]={0,31,28,31,30,31,30,31,31,30,31,30,31};
+      bool leap=(y%400==0||(y%100 && y%4==0));
+      isValid=y>0&&(m>0)&&(m<=12)&&(d>0)&&(d<=((m==2&&leap)?1:0)+mon[m]);
+      if(!isValid||y>maxint)
+         yyerror(&(yyloc),sql_string,sql_result,scanner,"FAILURE\n");
+      $$ = new Value(y,m,d);
     }
     ;
     

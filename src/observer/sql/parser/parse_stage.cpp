@@ -30,9 +30,9 @@ using namespace common;
 RC ParseStage::handle_request(SQLStageEvent *sql_event)
 {
   RC rc = RC::SUCCESS;
-
-  SqlResult         *sql_result = sql_event->session_event()->sql_result();
-  const std::string &sql        = sql_event->sql();
+  
+  SqlResult *sql_result = sql_event->session_event()->sql_result();
+  const std::string &sql = sql_event->sql();
 
   ParsedSqlResult parsed_sql_result;
 
@@ -49,10 +49,17 @@ RC ParseStage::handle_request(SQLStageEvent *sql_event)
 
   std::unique_ptr<ParsedSqlNode> sql_node = std::move(parsed_sql_result.sql_nodes().front());
   if (sql_node->flag == SCF_ERROR) {
-    // set error information to event
-    rc = RC::SQL_SYNTAX;
-    sql_result->set_return_code(rc);
-    sql_result->set_state_string("Failed to parse sql");
+    if(sql_node->error.error_msg=="FAILURE\n"){
+      rc=RC::INTERNAL;
+      sql_result->set_return_code(rc);
+      sql_result->set_state_string("");
+    }
+    else{
+      // set error information to event
+      rc = RC::SQL_SYNTAX;
+      sql_result->set_return_code(rc);
+      sql_result->set_state_string("Failed to parse sql");
+    }
     return rc;
   }
 

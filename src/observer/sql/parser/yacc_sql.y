@@ -55,6 +55,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 
 //标识tokens
 %token  SEMICOLON
+        SUM_F
         CREATE
         DROP
         TABLE
@@ -524,6 +525,10 @@ select_attr:
       delete $1;
     }
     ;
+    
+aggr_op:
+    SUM_F { $$ = AGGR_SUM; }
+    ;
 
 rel_attr:
     ID {
@@ -537,6 +542,10 @@ rel_attr:
       $$->attribute_name = $3;
       free($1);
       free($3);
+    }
+    | aggr_op LBRACE rel_attr RBRACE {
+      $$ = $3;
+      $$->aggregation = $1;
     }
     ;
 

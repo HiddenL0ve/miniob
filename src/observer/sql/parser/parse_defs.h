@@ -33,16 +33,31 @@ class Expression;
  * Rel -> Relation
  * Attr -> Attribute
  */
+
+enum AggrOp
+{
+  AGGR_SUM,
+  AGGR_NONE,
+  AGGR_MAX,
+  AGGR_MIN,
+  AGGR_AVG,
+  AGGR_CONUT,
+  AGGR_CONUT_ALL,
+  AGGR_NONE
+};
+
 struct RelAttrSqlNode
 {
   std::string relation_name;   ///< relation name (may be NULL) 表名
   std::string attribute_name;  ///< attribute name              属性名
+  AggrOp aggregation = AGGR_NONE; 
 };
 
 /**
  * @brief 描述比较运算符
  * @ingroup SQLParser
  */
+
 enum CompOp
 {
   EQUAL_TO,     ///< "="

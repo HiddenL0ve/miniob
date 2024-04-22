@@ -76,7 +76,7 @@ TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, con
   }
 }
 
-TupleCellSpec::TupleCellSpec(const char *alias, const AggrOp aggr = AGGR_NONE)
+TupleCellSpec::TupleCellSpec(const char *alias, const AggrOp aggr)
 {
   if (aggr) {
     aggr_ = aggr;

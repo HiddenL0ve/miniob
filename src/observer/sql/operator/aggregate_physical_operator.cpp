@@ -4,6 +4,12 @@
 #include "storage/table/table.h"
 #include "storage/trx/trx.h"
 #include "sql/stmt/delete_stmt.h"
+#include "storage/field/field.h"
+#include "sql/parser/value.h"
+
+void AggregatePhysicalOperator::add_aggregation(const AggrOp aggregation){
+    aggregations_.push_back(aggregation);
+}
 
 RC AggregatePhysicalOperator::next()
 {

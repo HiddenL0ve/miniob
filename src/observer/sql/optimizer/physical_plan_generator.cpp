@@ -171,13 +171,17 @@ RC PhysicalPlanGenerator::create_plan(AggregateLogicalOperator &aggregate_oper, 
   const vector<Field> &aggregate_fields=aggregate_oper.fields();
   LOG_TRACE("got %d aggregation fields",aggregate_fields.size());
   for(const Field &field : aggregate_fields){
+    aggregate_operator->add_aggregation(field.aggregation());
+  }
+
+  if(child_phy_oper){
     aggregate_operator->add_child(std::move(child_phy_oper));
   }
 
-  oper=unique_ptr<PhysicalOperator>(aggregate_operator);
+  oper = unique_ptr<PhysicalOperator>(aggregate_operator);
   LOG_TRACE("create an aggregate physical operator");
 
- return rc;
+  return rc;
 }
 
 RC PhysicalPlanGenerator::create_plan(PredicateLogicalOperator &pred_oper, unique_ptr<PhysicalOperator> &oper)

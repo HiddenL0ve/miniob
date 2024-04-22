@@ -43,7 +43,6 @@ enum AggrOp
   AGGR_AVG,
   AGGR_CONUT,
   AGGR_CONUT_ALL,
-  AGGR_NONE
 };
 
 struct RelAttrSqlNode

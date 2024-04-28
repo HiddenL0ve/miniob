@@ -6,6 +6,7 @@
 #include "sql/expr/expression.h"
 #include "sql/operator/logical_operator.h"
 #include "storage/field/field.h"
+#include "logical_operator.h"
 
 /**
  * @brief 插入逻辑算子

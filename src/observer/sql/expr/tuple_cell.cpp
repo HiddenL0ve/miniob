@@ -12,10 +12,16 @@ See the Mulan PSL v2 for more details. */
 // Created by WangYunlai on 2022/07/05.
 //
 
+#include <sstream>
 #include "sql/expr/tuple_cell.h"
+#include "storage/field/field.h"
+#include "common/log/log.h"
+#include "common/lang/comparator.h"
 #include "common/lang/string.h"
 
-void aggr_to_string(const AggrOp aggr, std::string aggr_repr){
+RC aggr_to_string(const AggrOp aggr, std::string &aggr_repr){
+  RC rc= RC::SUCCESS;
+
   switch (aggr) {
     case AggrOp::AGGR_NONE:
       aggr_repr = "";
@@ -37,13 +43,18 @@ void aggr_to_string(const AggrOp aggr, std::string aggr_repr){
       aggr_repr = "MAX";
       break;
 
-    case AggrOp::AGGR_CONUT_ALL:
+    case AggrOp::AGGR_COUNT_ALL:
       aggr_repr = "COUNT(*)";
       break;
 
     default:
-      throw std::invalid_argument("Invalid AggrOp value");
+      return RC::UNIMPLENMENT;
   }
+  return rc;
+}
+
+TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, const char *alias){
+  
 }
 
 TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, const char *alias, const AggrOp aggr)
@@ -66,7 +77,7 @@ TupleCellSpec::TupleCellSpec(const char *table_name, const char *field_name, con
       alias_ = table_name_ + "." + field_name_;
     }
 
-    if(aggr_ == AggrOp::AGGR_CONUT_ALL){
+    if(aggr_ == AggrOp::AGGR_COUNT_ALL){
       alias_ = "COUNT(*)";
     }else if(aggr_ != AggrOp::AGGR_NONE){
       std::string aggr_repr;
@@ -83,7 +94,7 @@ TupleCellSpec::TupleCellSpec(const char *alias, const AggrOp aggr)
   }
   if(alias){
     alias_ = alias;
-    if(aggr == AggrOp::AGGR_CONUT_ALL){
+    if(aggr == AggrOp::AGGR_COUNT_ALL){
       alias_ = "COUNT(*)";
     }else if(aggr != AggrOp::AGGR_NONE){
       std::string aggr_repr;

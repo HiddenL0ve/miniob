@@ -15,6 +15,7 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "sql/operator/logical_operator.h"
 

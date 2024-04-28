@@ -14,11 +14,13 @@ See the Mulan PSL v2 for more details. */
 
 #pragma once
 
+#include <string.h>
 #include <memory>
 #include <string>
 
-#include "sql/parser/value.h"
 #include "storage/field/field.h"
+#include "sql/parser/value.h"
+#include "common/log/log.h"
 
 class Tuple;
 

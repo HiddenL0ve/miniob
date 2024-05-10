@@ -342,7 +342,7 @@ bool Value::get_boolean() const
       return num_value_.bool_value_;
     } break;
     default: {
-      LOG_WARN("unknown data type. type=%d", attr_type_);
+      LOG_WARN("unknown data type, type=%d", attr_type_);
       return false;
     }
   }

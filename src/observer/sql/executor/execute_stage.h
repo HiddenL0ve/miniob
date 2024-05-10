@@ -15,6 +15,7 @@ See the Mulan PSL v2 for more details. */
 #pragma once
 
 #include "common/rc.h"
+#include "sql/parser/parse.h"
 
 class SQLStageEvent;
 class SessionEvent;

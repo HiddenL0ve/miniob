@@ -28,7 +28,7 @@ class AggregatePhysicalOperator: public PhysicalOperator
     RC close() override;
 
     // Tuple *current_tuple() override;
-    Tuple *current_tuple() {return nullptr;}
+    Tuple *current_tuple() {return &result_tuple_;}
 
     private :
     std::vector<AggrOp> aggregations_;

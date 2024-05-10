@@ -17,8 +17,9 @@ See the Mulan PSL v2 for more details. */
 #include <memory>
 
 #include "common/rc.h"
-#include "sql/operator/logical_operator.h"
 #include "sql/operator/physical_operator.h"
+#include "sql/operator/logical_operator.h"
+#include "sql/operator/aggregate_logical_operator.h"
 
 class TableGetLogicalOperator;
 class PredicateLogicalOperator;
@@ -28,7 +29,6 @@ class DeleteLogicalOperator;
 class ExplainLogicalOperator;
 class JoinLogicalOperator;
 class CalcLogicalOperator;
-class AggregateLogicalOperator;
 
 /**
  * @brief 物理计划生成器
@@ -36,10 +36,10 @@ class AggregateLogicalOperator;
  * @details 根据逻辑计划生成物理计划。
  * 不会做任何优化，完全根据本意生成物理计划。
  */
-class PhysicalPlanGenerator
+class PhysicalPlanGenerator 
 {
 public:
-  PhysicalPlanGenerator()          = default;
+  PhysicalPlanGenerator() = default;
   virtual ~PhysicalPlanGenerator() = default;
 
   RC create(LogicalOperator &logical_operator, std::unique_ptr<PhysicalOperator> &oper);
@@ -53,5 +53,5 @@ private:
   RC create_plan(ExplainLogicalOperator &logical_oper, std::unique_ptr<PhysicalOperator> &oper);
   RC create_plan(JoinLogicalOperator &logical_oper, std::unique_ptr<PhysicalOperator> &oper);
   RC create_plan(CalcLogicalOperator &logical_oper, std::unique_ptr<PhysicalOperator> &oper);
-  RC create_plan(AggregateLogicalOperator &logical_oper, std::unique_ptr<PhysicalOperator> &oper);
+  RC create_plan(AggregateLogicalOperator &aggregate_oper,std::unique_ptr<PhysicalOperator> &oper);
 };

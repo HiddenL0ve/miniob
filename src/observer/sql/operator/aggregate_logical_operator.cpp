@@ -1,3 +1,3 @@
-#include "sql/operator/aggregate_logical_operator.h"
+#include"sql/operator/aggregate_logical_operator.h"
 
-AggregateLogicalOperator::AggregateLogicalOperator(const std::vector<Field> &field): fields_(field){};
+AggregateLogicalOperator::AggregateLogicalOperator(const std::vector<Field> &field):fields_(field){};

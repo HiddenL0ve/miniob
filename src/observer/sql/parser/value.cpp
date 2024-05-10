@@ -19,7 +19,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/comparator.h"
 #include "common/lang/string.h"
 
-const char *ATTR_TYPE_NAME[] = {"undefined", "chars", "ints", "floats", "booleans", "dates"};
+const char *ATTR_TYPE_NAME[] = {"undefined", "chars", "ints", "floats", "booleans","dates"};
 
 const char *attr_type_to_string(AttrType type)
 {
@@ -71,16 +71,16 @@ void Value::set_data(char *data, int length)
       num_value_.int_value_ = *(int *)data;
       length_ = length;
     } break;
+    case DATES: {
+      num_value_.date_value_ = *(int *)data;
+      length_ = length;
+    } break;
     case FLOATS: {
       num_value_.float_value_ = *(float *)data;
       length_ = length;
     } break;
     case BOOLEANS: {
       num_value_.bool_value_ = *(int *)data != 0;
-      length_ = length;
-    } break;
-    case DATES: {
-      num_value_.date_value_ = *(int *)data;
       length_ = length;
     } break;
     default: {
@@ -95,27 +95,24 @@ void Value::set_int(int val)
   length_ = sizeof(val);
 }
 
-void Value::set_float(float val)
-{
-  attr_type_ = FLOATS;
-  num_value_.float_value_ = val;
-  length_ = sizeof(val);
-}
-
 void Value::set_date(int val)
 {
   attr_type_ = DATES;
   num_value_.date_value_ = val;
   length_ = sizeof(val);
 }
+void Value::set_date(int y,int m,int d){
+   attr_type_ = DATES;
+  num_value_.int_value_ = y*10000+m*100+d;
+  length_ = sizeof(num_value_.int_value_);
 
-void Value::set_date(int y, int m, int d)
-{
-  attr_type_ = DATES;
-  num_value_.int_value_ = y*10000 + m*100 + d;
-  length_ = sizeof(num_value_.int_value_ );
 }
-
+void Value::set_float(float val)
+{
+  attr_type_ = FLOATS;
+  num_value_.float_value_ = val;
+  length_ = sizeof(val);
+}
 void Value::set_boolean(bool val)
 {
   attr_type_ = BOOLEANS;
@@ -186,11 +183,11 @@ std::string Value::to_string() const
     case CHARS: {
       os << str_value_;
     } break;
-    case DATES: {
+    case DATES:{
       char buf[16]={0};
       snprintf(buf,sizeof(buf),"%04d-%02d-%02d",num_value_.int_value_/10000,(num_value_.int_value_%10000)/100,num_value_.int_value_%100);
-      os << buf;
-    } break;
+      os<<buf;
+    }break;
     default: {
       LOG_WARN("unsupported attr type: %d", attr_type_);
     } break;
@@ -205,6 +202,9 @@ int Value::compare(const Value &other) const
       case INTS: {
         return common::compare_int((void *)&this->num_value_.int_value_, (void *)&other.num_value_.int_value_);
       } break;
+      case DATES: {
+        return common::compare_date((void *)&this->num_value_.date_value_, (void *)&other.num_value_.date_value_);
+      } break;
       case FLOATS: {
         return common::compare_float((void *)&this->num_value_.float_value_, (void *)&other.num_value_.float_value_);
       } break;
@@ -217,9 +217,6 @@ int Value::compare(const Value &other) const
       case BOOLEANS: {
         return common::compare_int((void *)&this->num_value_.bool_value_, (void *)&other.num_value_.bool_value_);
       }
-      case DATES: {
-        return common::compare_date((void *)&this->num_value_.date_value_, (void *)&other.num_value_.date_value_);
-      }break;
       default: {
         LOG_WARN("unsupported type: %d", this->attr_type_);
       }
@@ -262,15 +259,14 @@ int Value::get_int() const
   }
   return 0;
 }
-
 int Value::get_date() const
 {
   switch (attr_type_) {
-    case DATES: {
+    case DATES:{
       return num_value_.date_value_;
     }
-    default: {
-      LOG_WARN("unknown data type. type=%d", attr_type_);
+    default:{
+      LOG_WARN("unknown date type,type=%d",attr_type_);
       return 0;
     }
   }
@@ -342,9 +338,24 @@ bool Value::get_boolean() const
       return num_value_.bool_value_;
     } break;
     default: {
-      LOG_WARN("unknown data type, type=%d", attr_type_);
+      LOG_WARN("unknown data type. type=%d", attr_type_);
       return false;
     }
   }
   return false;
 }
+
+// bool  is_leap_year(int year){
+//   return(year%4==0&& year%100!=0)||year&400==0;
+// }
+
+// void strDate_to_intDate_(const char* strDate,int& intDate){
+//   int year=0;
+//   int month=0;
+//   int day=0;
+//   int ret=sscanf(strDate,"%d-%d-%d",&year,&month,&day);
+//    if(ret!=3){
+//      throw "Date illegal";
+//    }
+
+// }

@@ -410,6 +410,7 @@ value:
       if(!isValid||y>maxint)
          yyerror(&(yyloc),sql_string,sql_result,scanner,"FAILURE\n");
       $$ = new Value(y,m,d);
+      
     }
     ;
     
@@ -533,7 +534,7 @@ select_attr:
       delete $1;
     }
     ;
-    
+
 aggr_op:
     SUM_F { $$ = AGGR_SUM; }
     | MAX_F { $$ = AGGR_MAX; }
@@ -584,12 +585,14 @@ rel_attr_aggr_list:
     ;
 
 rel_attr:
-    ID {
+    ID 
+    {
       $$ = new RelAttrSqlNode;
       $$->attribute_name = $1;
       free($1);
     }
-    | ID DOT ID {
+    | ID DOT ID 
+    {
       $$ = new RelAttrSqlNode;
       $$->relation_name  = $1;
       $$->attribute_name = $3;

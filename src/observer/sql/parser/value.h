@@ -51,7 +51,8 @@ public:
   explicit Value(float val);
   explicit Value(bool val);
   explicit Value(const char *s, int len = 0);
-  explicit Value(int y,int m, int d);
+  //explicit Value(const char *date, int len, int flag);
+  explicit Value(int y, int m, int d);
 
   Value(const Value &other) = default;
   Value &operator=(const Value &other) = default;
@@ -68,9 +69,9 @@ public:
   void set_int(int val);
   void set_float(float val);
   void set_boolean(bool val);
-  void set_string(const char *s, int len = 0);
   void set_date(int val);
-  void set_date(int y, int m, int d);
+  void set_date(int y,int m,int d);
+  void set_string(const char *s, int len = 0);
   void set_value(const Value &value);
 
   std::string to_string() const;
@@ -111,3 +112,7 @@ private:
   } num_value_;
   std::string str_value_;
 };
+
+// bool is_leap_year(int year);
+// void strDate_to_intDate_(const char* strDate,int& intDate);
+// void intDate_to_strDate_(const int intDate,std::string& strDate);

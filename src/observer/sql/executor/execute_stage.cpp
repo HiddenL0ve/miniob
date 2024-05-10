@@ -19,7 +19,7 @@ See the Mulan PSL v2 for more details. */
 
 #include "common/log/log.h"
 #include "session/session.h"
-
+#include "event/storage_event.h"
 #include "event/sql_event.h"
 #include "event/session_event.h"
 #include "sql/stmt/stmt.h"

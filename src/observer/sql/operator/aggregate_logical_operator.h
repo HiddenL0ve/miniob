@@ -7,7 +7,7 @@
 #include"sql/operator/logical_operator.h"
 #include"storage/field/field.h"
 
-class AggregateLogicalOperator:public LogicalOperator
+class AggregateLogicalOperator : public LogicalOperator
 {
     public:
     AggregateLogicalOperator(const std::vector<Field> &field);

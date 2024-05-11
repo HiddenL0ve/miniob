@@ -3,15 +3,14 @@
 #include "sql/operator/physical_operator.h"
 #include "sql/parser/parse.h"
 #include "sql/expr/tuple.h"
-
-/**
-* @brief 物理算子
-* @ingroup PhysicalOperator
+#include "logical_operator.h"
+/***
+ @brief 聚合物理算子*
+ @ingroup PhysicalOperator
 */
-
-class AggregatePhysicalOperator: public PhysicalOperator
+class AggregatePhysicalOperator :public PhysicalOperator
 {
-  public:
+    public:
     AggregatePhysicalOperator(){}
 
     virtual ~AggregatePhysicalOperator() = default;
@@ -27,11 +26,9 @@ class AggregatePhysicalOperator: public PhysicalOperator
     RC next() override;
     RC close() override;
 
-    // Tuple *current_tuple() override;
-    Tuple *current_tuple() {return &result_tuple_;}
-
-    private :
+    Tuple *current_tuple() override { return &result_tuple_; }
+     
+    private:
     std::vector<AggrOp> aggregations_;
     ValueListTuple result_tuple_;
-
 };

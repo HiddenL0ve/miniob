@@ -277,7 +277,7 @@ RC RecordPageHandler::update_record(const RID *rid, int offset, int len, Value &
 
   char* src_data = frame_->data() + page_header_->first_record_offset + (page_header_->record_size * rid->slot_num);
 
-  char* change_loc = (char*)((int)(src_data) + offset);
+  char* change_loc = (char*)((unsigned long long)(src_data) + offset);
   const char* data = value.data();
   if(len == -1){
     len = value.length();
@@ -477,6 +477,19 @@ RC RecordFileHandler::delete_record(const RID *rid)
     LOG_TRACE("add free page %d to free page list", rid->page_num);
     lock_.unlock();
   }
+  return rc;
+}
+
+RC RecordFileHandler::update_record(RID *rid, int offset, int len, Value &value){
+  RC rc = RC::SUCCESS;
+
+  RecordPageHandler page_handler;
+  if ((rc = page_handler.init(*disk_buffer_pool_, rid->page_num, false /*readonly*/)) != RC::SUCCESS) {
+    LOG_ERROR("Failed to init record page handler.page number=%d. rc=%s", rid->page_num, strrc(rc));
+    return rc;
+  }
+
+  rc = page_handler.update_record(rid, offset, len, value);
   return rc;
 }
 

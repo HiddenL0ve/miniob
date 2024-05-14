@@ -13,6 +13,8 @@ See the Mulan PSL v2 for more details. */
 //
 
 #include "sql/stmt/update_stmt.h"
+#include "sql/stmt/insert_stmt.h"
+#include "sql/stmt/delete_stmt.h"
 #include "common/log/log.h"
 #include "sql/stmt/filter_stmt.h"
 #include "storage/db/db.h"
@@ -66,6 +68,8 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt)
     LOG_WARN("failed to create filter statement. rc=%d:%s", rc, strrc(rc));
     return rc;
   }
+  const Value value = update_sql.value;
+  Field field(table, field_meta);
 
   stmt = new UpdateStmt(table, field, value, filter_stmt);
   return rc;

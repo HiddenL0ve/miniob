@@ -190,6 +190,40 @@ RC MvccTrx::delete_record(Table *table, Record &record)
   return RC::SUCCESS;
 }
 
+RC MvccTrx::update_record(Table *table, Record &record, int offset, int len, Value &value){
+  Field begin_field;
+  Field end_field;
+  trx_fields(table, begin_field, end_field);
+
+  int32_t begin_xid = begin_field.get_int(record);
+  int32_t end_xid = end_field.get_int(record);
+
+  // 检查记录是否存在，以及是否已被其他事务更新
+  ASSERT(begin_xid > 0 && end_xid == trx_kit_.max_trx_id(),
+         "concurrency conflict: record does not exist or is being updated by another transaction. begin_xid=%d, end_xid=%d, current trx id=%d, rid=%s",
+         begin_xid, end_xid, trx_id_, record.rid().to_string().c_str());
+
+  // 进行记录的更新操作
+  RC rc = table->update_record(record, offset, len, value);
+  if (rc != RC::SUCCESS) {
+    LOG_WARN("failed to update record in table. rc=%s", strrc(rc));
+    return rc;
+  }
+
+  // 记录更新操作的日志
+  rc = log_manager_->append_log(CLogType::UPDATE, trx_id_, table->table_id(), record.rid(), len, offset, value.data());
+  ASSERT(rc == RC::SUCCESS, "failed to append update record log. trx id=%d, table id=%d, rid=%s, offset=%d, len=%d, rc=%s",
+         trx_id_, table->table_id(), record.rid().to_string().c_str(), offset, len, strrc(rc));
+
+  // 将更新操作记录到事务的操作集合中
+  pair<OperationSet::iterator, bool> ret = operations_.insert(Operation(Operation::Type::UPDATE, table, record.rid()));
+  if (!ret.second) {
+    LOG_WARN("failed to insert operation(update) into operation set: duplicate");
+    return RC::INTERNAL;
+  }
+  return RC::SUCCESS;
+}
+
 RC MvccTrx::visit_record(Table *table, Record &record, bool readonly)
 {
   Field begin_field;

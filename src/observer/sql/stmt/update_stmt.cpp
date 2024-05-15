@@ -46,11 +46,17 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt)
     return RC::SCHEMA_TABLE_NOT_EXIST;
   }
 
+  const Value value = update_sql.value;
   const FieldMeta *field_meta = table->table_meta().field(update_sql.attribute_name.c_str());
 
   if(nullptr == field_meta){
     LOG_WARN("no such field. field=%s.%s.%s", db->name(), table->name(), update_sql.attribute_name);
     return RC::SCHEMA_FIELD_MISSING;
+  }
+
+  if (value.attr_type() != field_meta->type()) {
+    LOG_WARN("update value type does not match field type.");
+    return RC::INVALID_ARGUMENT;
   }
 
   std::unordered_map<std::string, Table *> table_map;
@@ -68,7 +74,6 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt)
     LOG_WARN("failed to create filter statement. rc=%d:%s", rc, strrc(rc));
     return rc;
   }
-  const Value value = update_sql.value;
   Field field(table, field_meta);
 
   stmt = new UpdateStmt(table, field, value, filter_stmt);
